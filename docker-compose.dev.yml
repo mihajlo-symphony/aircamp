@@ -4,13 +4,17 @@ services:
     aircamp-server:
         build:
             context: ./server
-            dockerfile: Dockerfile
-        image: mihajlonesic/aircamp-server:latest
-        container_name: aircamp-server
+            dockerfile: Dockerfile.local
+        image: mihajlonesic/aircamp-server-dev:latest
+        container_name: aircamp-server-dev
         env_file:
             - .env
+        environment:
+            - NODE_ENV=development
         networks:
             - aircamp-network
+        volumes:
+            - ./server:/server
         ports:
             - $SERVER_PORT:3000
         depends_on:
@@ -30,7 +34,7 @@ services:
         networks:
             - aircamp-network
         volumes:
-            - aircamp-data:/var/lib/postgresql/data/
+            - ./data/dev-db:/var/lib/postgresql/data/
         ports:
             - ${DB_PORT}:5432
         healthcheck:

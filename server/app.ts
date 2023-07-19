@@ -1,16 +1,21 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
-import http from 'http';
+import http, { Server } from 'http';
 
 dotenv.config();
 const port = 3000;
 const app: Express = express();
-const server = http.createServer(app)
+const server: Server = http.createServer(app)
 
 app.set('json spaces', 2)
 
 app.get('/', (req: Request, res: Response) => {
   res.status(200).json(req.headers)
+});
+
+app.get('/hello', (req: Request, res: Response) => {
+  const name = req.query['name'] || 'nobody';
+  res.status(200).json({message: `Hello, ${name}`})
 });
 
 app.get('*', (req: Request, res: Response) => {
