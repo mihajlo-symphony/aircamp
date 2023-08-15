@@ -1,0 +1,1 @@
+export { default as campService } from './camp.service';

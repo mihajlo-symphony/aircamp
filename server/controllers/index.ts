@@ -1,0 +1,1 @@
+export { default as campController } from './camp.controller';

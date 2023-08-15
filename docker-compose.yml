@@ -1,0 +1,49 @@
+version: "3.8"
+
+services:
+    aircamp-server:
+        build:
+            context: ./server
+            dockerfile: Dockerfile
+        image: mihajlonesic/aircamp-server:latest
+        container_name: aircamp-server
+        env_file:
+            - .env
+        networks:
+            - aircamp-network
+        ports:
+            - $SERVER_PORT:3000
+        depends_on:
+            aircamp-db:
+              condition: service_healthy
+        restart: on-failure
+
+    aircamp-db:
+        image: "postgres:14.2"
+        container_name: aircamp-db
+        env_file:
+            - .env
+        environment:
+            - POSTGRES_DB=$DB_NAME
+            - POSTGRES_USER=$DB_USERNAME
+            - POSTGRES_PASSWORD=$DB_PASSWORD
+        networks:
+            - aircamp-network
+        volumes:
+            - aircamp-data:/var/lib/postgresql/data/
+        ports:
+            - ${DB_PORT}:5432
+        healthcheck:
+          test: ["CMD-SHELL", "pg_isready -U postgres"]
+          interval: 10s
+          timeout: 20s
+          retries: 5
+
+networks:
+    aircamp-network:
+        name: aircamp-network
+        driver: bridge
+
+volumes:
+    aircamp-data:
+        name: aircamp-data
