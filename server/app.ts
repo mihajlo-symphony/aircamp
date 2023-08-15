@@ -1,6 +1,7 @@
-import express, { Express, Request, Response } from 'express';
+import express, { Express, NextFunction, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import http, { Server } from 'http';
+import routes from './routes';
 
 dotenv.config();
 const port = 3000;
@@ -9,17 +10,12 @@ const server: Server = http.createServer(app)
 
 app.set('json spaces', 2)
 
-app.get('/', (req: Request, res: Response) => {
-  res.status(200).json(req.headers)
-});
+// v1 api routes
+app.use('/api', routes);
 
-app.get('/hello', (req: Request, res: Response) => {
-  const name = req.query['name'] || 'nobody';
-  res.status(200).json({message: `Hello, ${name}`})
-});
-
-app.get('*', (req: Request, res: Response) => {
-  res.status(404).json({message: "404 Not Found"});
+// send back a 404 error for any unknown api request
+app.use((request: Request, response: Response, next: NextFunction) => {
+  next(response.status(404).json({message: "404 Not Found"}));
 });
 
 server.listen(port, () => {
